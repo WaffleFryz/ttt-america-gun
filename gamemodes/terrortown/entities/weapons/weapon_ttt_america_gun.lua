@@ -34,9 +34,13 @@ SWEP.AutoSpawnable 		   = true
 SWEP.Spawnable             = true
 SWEP.AmmoEnt               = "item_ammo_revolver_ttt"
 
+local primarySounds = {"Weapon_AMERICA.Fire1", "Weapon_AMERICA.Fire2", "Weapon_AMERICA.Fire3", 
+    "Weapon_AMERICA.Fire4", "Weapon_AMERICA.Fire5", "Weapon_AMERICA.Fire6", "Weapon_AMERICA.Fire7"}
+
 -- Horrible concatting here
 function SWEP:PrimaryAttack()
-	self.Primary.Sound = Sound("weapons/AMERICA/fire"..(8 - self:Clip1())..".wav")
+    local i = (8 - self:Clip1()) % 8
+    self.Primary.Sound = primarySounds[i]
 	return self.BaseClass.PrimaryAttack(self)
 end
 
@@ -64,6 +68,16 @@ function SWEP:Reload()
 
 	self:EmitSound("Weapon_AMERICA.Reload") -- Maybe I'll replace the reload sound if we get a custom model
 end
+
+function SWEP:DryFire(setnext)
+    if CLIENT and LocalPlayer() == self:GetOwner() then
+       self:EmitSound( "Weapon_AMERICA.Empty" )
+    end
+ 
+    setnext(self, CurTime() + 0.2)
+ 
+    self:Reload()
+ end
 
 -- Slow Down the deploy speed to match the music
 function SWEP:Equip() 
