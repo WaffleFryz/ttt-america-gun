@@ -37,11 +37,25 @@ SWEP.AmmoEnt               = "item_ammo_revolver_ttt"
 local primarySounds = {"Weapon_AMERICA.Fire1", "Weapon_AMERICA.Fire2", "Weapon_AMERICA.Fire3", 
     "Weapon_AMERICA.Fire4", "Weapon_AMERICA.Fire5", "Weapon_AMERICA.Fire6", "Weapon_AMERICA.Fire7"}
 
--- Horrible concatting here
 function SWEP:PrimaryAttack()
+    self:GetPrimaryFireSound()
+	return self.BaseClass.PrimaryAttack(self)
+end
+
+-- iterate thru the list of sounds
+function SWEP:GetPrimaryFireSound()
     local i = (8 - self:Clip1()) % 8
     self.Primary.Sound = primarySounds[i]
-	return self.BaseClass.PrimaryAttack(self)
+end
+
+function SWEP:DryFire(setnext)
+    if CLIENT and LocalPlayer() == self:GetOwner() then
+        self:EmitSound("Weapon_AMERICA.Empty")
+    end
+
+    setnext(self, CurTime() + 0.2)
+
+    self:Reload()
 end
 
 -- Add some zoom to ironsights for this gun
